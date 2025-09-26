@@ -4,17 +4,27 @@ namespace App\Controllers;
 
 class Home extends BaseController
 {
-<<<<<<< HEAD
-    public function index()
-    {
-        return view('template'); // will load app/Views/template.php
-=======
     public function index(): string
     {
         $data = [
             'title' => 'Home - ITE311 Web System'
         ];
-        return view('home', $data);
->>>>>>> 23e0973a899deb3ad5683eced5a25bd250639e2d
+        return view('index', $data);
+    }
+
+    public function about(): string
+    {
+        $data = [
+            'title' => 'About - ITE311 Web System'
+        ];
+        return view('about', $data);
+    }
+
+    public function contact(): string
+    {
+        $data = [
+            'title' => 'Contact - ITE311 Web System'
+        ];
+        return view('contact', $data);
     }
 }
