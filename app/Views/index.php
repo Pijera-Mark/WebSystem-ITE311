@@ -1,4 +1,4 @@
-<?= $this->extend('template') ?>
+<?= $this->extend('working_template') ?>
 
 <?= $this->section('content') ?>
 <div class="hero-section">

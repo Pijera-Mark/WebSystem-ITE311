@@ -1,0 +1,13 @@
+# CI4 writable runtime data
+writable/session/
+writable/cache/
+writable/logs/*.log
+
+# Local artifacts
+cookies.txt
+ci.jar
+
+# OS files
+Thumbs.db
+.DS_Store
+

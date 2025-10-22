@@ -53,29 +53,16 @@
                     <li class="nav-item">
                         <a class="nav-link" href="<?= base_url('contact') ?>">Contact</a>
                     </li>
-                    <?php if (session() && session()->get('is_logged_in')): ?>
-                        <li class="nav-item">
-                            <a class="nav-link" href="<?= base_url('dashboard') ?>">
-                                <i class="bi bi-speedometer2"></i> Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="<?= base_url('logout') ?>">
-                                <i class="bi bi-box-arrow-right"></i> Logout
-                            </a>
-                        </li>
-                    <?php else: ?>
-                        <li class="nav-item">
-                            <a class="nav-link" href="<?= base_url('login') ?>">
-                                <i class="bi bi-box-arrow-in-right"></i> Login
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="<?= base_url('register') ?>">
-                                <i class="bi bi-person-plus"></i> Register
-                            </a>
-                        </li>
-                    <?php endif; ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= base_url('login') ?>">
+                            <i class="bi bi-box-arrow-in-right"></i> Login
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= base_url('register') ?>">
+                            <i class="bi bi-person-plus"></i> Register
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
