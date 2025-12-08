@@ -76,8 +76,9 @@
                         <?php endif; ?>
 
                         <form action="<?= base_url('login') ?>" method="post">
+                            <input type="hidden" name="csrf_token" value="<?= $csrf_token ?? '' ?>">
                             <?= csrf_field() ?>
-                            
+
                             <!-- Email Field -->
                             <div class="mb-3">
                                 <label for="email" class="form-label">
@@ -115,7 +116,7 @@
 
                             <!-- Remember Me Checkbox -->
                             <div class="mb-3 form-check">
-                                <input type="checkbox" class="form-check-input" id="remember">
+                                <input type="checkbox" class="form-check-input" id="remember" name="remember" value="1">
                                 <label class="form-check-label" for="remember">
                                     Remember me
                                 </label>

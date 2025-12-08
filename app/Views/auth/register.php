@@ -76,7 +76,7 @@
                         <?php endif; ?>
 
                         <form action="<?= base_url('register') ?>" method="post">
-                            <?= csrf_field() ?>
+                            <input type="hidden" name="csrf_token" value="<?= $csrf_token ?? '' ?>">
                             
                             <!-- Name Field -->
                             <div class="mb-3">
