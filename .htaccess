@@ -1,0 +1,37 @@
+# Disable directory browsing
+Options -Indexes
+
+# Follow symbolic links in this directory
+Options +FollowSymLinks
+
+# Handle specific requests
+<IfModule mod_rewrite.c>
+    # Enable mod_rewrite
+    RewriteEngine On
+
+    # Set the base directory for the rewrite rules
+    RewriteBase /
+
+    # Redirect Trailing Slashes If Not A Folder
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    # Handle Front Controller
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+<IfModule !mod_rewrite.c>
+    # If we don't have mod_rewrite installed, all 404's
+    # can be sent to index.php, and everything works as normal.
+    ErrorDocument 404 index.php
+</IfModule>
+
+# Disable access to hidden files
+<IfModule mod_authz_core.c>
+    <RequireAll>
+        Require all granted
+    </RequireAll>
+</IfModule>

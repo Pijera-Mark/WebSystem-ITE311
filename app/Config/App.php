@@ -16,7 +16,7 @@ class App extends BaseConfig
      *
      * E.g., http://example.com/
      */
-    public string $baseURL = 'http://127.0.0.1:8080/';
+    public string $baseURL = 'http://localhost:8080/';
 
     /**
      * Allowed Hostnames in the Site URL other than the hostname in the baseURL.
@@ -183,20 +183,69 @@ class App extends BaseConfig
     public array $proxyIPs = [];
 
     /**
-     * --------------------------------------------------------------------------
-     * Content Security Policy
-     * --------------------------------------------------------------------------
+     * -----------------------------------------------------------------------
+     * Cookie Related Variables
+     * -----------------------------------------------------------------------
      *
-     * Enables the Response's Content Secure Policy to restrict the sources that
-     * can be used for images, scripts, CSS files, audio, video, etc. If enabled,
-     * the Response object will populate default values for the policy from the
-     * `ContentSecurityPolicy.php` file. Controllers can always add to those
-     * restrictions at run time.
+     * $cookiePrefix   = Set a prefix string if you need to avoid collisions
+     * $cookieDomain   = Set to .your-domain.com for site-wide cookies
+     * $cookiePath     = Typically will be a forward slash
+     * $cookieSecure   = This will only send cookies over secure connections
+     * $cookieHTTPOnly = This will only allow access to the cookie from HTTP, not JavaScript
+     * $cookieSameSite = Restrict cookie scope to same-site, strict, or lax
      *
-     * For a better understanding of CSP, see these documents:
+     * NOTE: The $cookieSecure setting is important for security. When set to true,
+     * cookies will only be sent over HTTPS connections. Set to false for local development.
+     */
+    public string $cookiePrefix = '';
+    public string $cookieDomain = '';
+    public string $cookiePath = '/';
+    public bool $cookieSecure = false;
+    public bool $cookieHTTPOnly = true;
+    public string $cookieSameSite = 'Lax';
+
+    /**
+     * -----------------------------------------------------------------------
+     * Cross Site Request Forgery
+     * -----------------------------------------------------------------------
+     * Enables a CSRF cookie token to be set. When true, any POST requests will
+     * automatically have a CSRF token applied. When false, you will need to
+     * manually add the CSRF token to your forms.
+     */
+    public bool $CSRFEnable = true;
+
+    /**
+     * -----------------------------------------------------------------------
+     * Session Variables
+     * -----------------------------------------------------------------------
      *
-     * @see http://www.html5rocks.com/en/tutorials/security/content-security-policy/
-     * @see http://www.w3.org/TR/CSP/
+     * $sessionDriver   = The session driver to use: 'files', 'database', 'redis', 'memcached'
+     * $sessionCookieName = The name of the cookie to use for the session
+     * $sessionExpiration = The number of SECONDS you want the session to last.
+     * $sessionSavePath  = The location to save sessions to, driver dependent.
+     * $sessionMatchIP   = Match IP addresses for session security
+     * $sessionTimeToUpdate = How many seconds between CI4 updating the session
+     * $sessionRegenerateDestroy = Whether to destroy session data on regeneration
+     *
+     * NOTE: For added security, set $sessionRegenerateDestroy to true.
+     */
+    public string $sessionDriver = 'file';
+    public string $sessionCookieName = 'ci_session';
+    public int $sessionExpiration = 7200;
+    public string $sessionSavePath = WRITEPATH . 'session';
+    public bool $sessionMatchIP = false;
+    public int $sessionTimeToUpdate = 300;
+    public bool $sessionRegenerateDestroy = false;
+
+    /**
+     * -----------------------------------------------------------------------
+     * Site Content Security Policy (CSP)
+     * -----------------------------------------------------------------------
+     *
+     * Enables the Response's Content Security Policy to restrict the sources
+     * that can be used for images, scripts, CSS files, audio, video, etc.
+     *
+     * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
      */
     public bool $CSPEnabled = false;
 }

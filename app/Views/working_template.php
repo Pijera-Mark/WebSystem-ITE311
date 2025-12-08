@@ -44,25 +44,68 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= base_url() ?>">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= base_url('about') ?>">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= base_url('contact') ?>">Contact</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= base_url('login') ?>">
-                            <i class="bi bi-box-arrow-in-right"></i> Login
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= base_url('register') ?>">
-                            <i class="bi bi-person-plus"></i> Register
-                        </a>
-                    </li>
+                    <?php if (session() && session()->get('isLoggedIn')): ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?= base_url('dashboard') ?>">
+                                <i class="bi bi-speedometer2"></i> Dashboard
+                            </a>
+                        </li>
+                        <?php if (session()->get('role') === 'admin'): ?>
+                            <!-- Admin Navigation -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
+                                    <i class="bi bi-gear"></i> Admin
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="<?= base_url('admin/users') ?>"><i class="bi bi-people"></i> Manage Users</a></li>
+                                    <li><a class="dropdown-item" href="<?= base_url('admin/courses') ?>"><i class="bi bi-book"></i> Manage Courses</a></li>
+                                    <li><a class="dropdown-item" href="<?= base_url('admin/reports') ?>"><i class="bi bi-graph-up"></i> Reports</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="<?= base_url('admin/settings') ?>"><i class="bi bi-gear"></i> Settings</a></li>
+                                </ul>
+                            </li>
+                        <?php elseif (session()->get('role') === 'instructor' || session()->get('role') === 'teacher'): ?>
+                            <!-- Instructor Navigation -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="instructorDropdown" role="button" data-bs-toggle="dropdown">
+                                    <i class="bi bi-mortarboard"></i> Teaching
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="<?= base_url('instructor/create-course') ?>"><i class="bi bi-plus-circle"></i> Create Course</a></li>
+                                    <li><a class="dropdown-item" href="<?= base_url('instructor/grade-submissions') ?>"><i class="bi bi-clipboard-check"></i> Grade Submissions</a></li>
+                                    <li><a class="dropdown-item" href="<?= base_url('instructor/reports') ?>"><i class="bi bi-graph-up"></i> Reports</a></li>
+                                </ul>
+                            </li>
+                        <?php elseif (session()->get('role') === 'student'): ?>
+                            <!-- Student Navigation -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="studentDropdown" role="button" data-bs-toggle="dropdown">
+                                    <i class="bi bi-book"></i> Learning
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="<?= base_url('courses/browse') ?>"><i class="bi bi-search"></i> Browse Courses</a></li>
+                                    <li><a class="dropdown-item" href="<?= base_url('student/my-courses') ?>"><i class="bi bi-journal-text"></i> My Courses</a></li>
+                                    <li><a class="dropdown-item" href="<?= base_url('student/certificates') ?>"><i class="bi bi-award"></i> Certificates</a></li>
+                                </ul>
+                            </li>
+                        <?php endif; ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?= base_url('logout') ?>">
+                                <i class="bi bi-box-arrow-right"></i> Logout
+                            </a>
+                        </li>
+                    <?php else: ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?= base_url('login') ?>">
+                                <i class="bi bi-box-arrow-in-right"></i> Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?= base_url('register') ?>">
+                                <i class="bi bi-person-plus"></i> Register
+                            </a>
+                        </li>
+                    <?php endif; ?>
                 </ul>
             </div>
         </div>

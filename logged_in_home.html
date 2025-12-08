@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - ITE311 Web System</title>
+    
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <style>
+        .navbar-brand {
+            font-weight: bold;
+        }
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 100px 0;
+        }
+        .card {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        footer {
+            background-color: #343a40;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="http://localhost:8080/">
+                <i class="bi bi-code-slash"></i> ITE311
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="http://localhost:8080/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="http://localhost:8080/about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="http://localhost:8080/contact">Contact</a>
+                    </li>
+                                            <li class="nav-item">
+                            <a class="nav-link" href="http://localhost:8080/dashboard">
+                                <i class="bi bi-speedometer2"></i> Dashboard
+                            </a>
+                        </li>
+                                                    <!-- Admin Navigation -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
+                                    <i class="bi bi-gear"></i> Admin
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#"><i class="bi bi-people"></i> Manage Users</a></li>
+                                    <li><a class="dropdown-item" href="#"><i class="bi bi-book"></i> Manage Courses</a></li>
+                                    <li><a class="dropdown-item" href="#"><i class="bi bi-graph-up"></i> Reports</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> Settings</a></li>
+                                </ul>
+                            </li>
+                                                <li class="nav-item">
+                            <a class="nav-link" href="http://localhost:8080/logout">
+                                <i class="bi bi-box-arrow-right"></i> Logout
+                            </a>
+                        </li>
+                                    </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <div class="hero-section">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-4">Welcome to ITE311 Web System</h1>
+        <p class="lead mb-4">A modern web application built with CodeIgniter 4 and Bootstrap 5</p>
+        <a href="http://localhost:8080/about" class="btn btn-light btn-lg me-3">Learn More</a>
+        <a href="http://localhost:8080/contact" class="btn btn-outline-light btn-lg">Contact Us</a>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-code-slash display-4 text-primary mb-3"></i>
+                    <h5 class="card-title">Modern Framework</h5>
+                    <p class="card-text">Built with CodeIgniter 4, a powerful PHP framework for rapid web development.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-bootstrap display-4 text-primary mb-3"></i>
+                    <h5 class="card-title">Responsive Design</h5>
+                    <p class="card-text">Beautiful, mobile-first design using Bootstrap 5 for optimal user experience.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-gear display-4 text-primary mb-3"></i>
+                    <h5 class="card-title">MVC Architecture</h5>
+                    <p class="card-text">Clean separation of concerns with Model-View-Controller pattern.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>ITE311 - Web System Development</h5>
+                    <p class="mb-0">Built with CodeIgniter 4 and Bootstrap 5</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">&copy; 2025 All rights reserved.</p>
+                    <small>Page rendered in 0.0371 seconds using 3.750 MB of memory.</small>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
