@@ -86,3 +86,8 @@ $routes->get('/notifications/get', 'NotificationController::getNotifications');
 $routes->post('/notifications/mark-read', 'NotificationController::markAsRead');
 $routes->post('/notifications/mark-all-read', 'NotificationController::markAllAsRead');
 $routes->get('/notifications/unread-count', 'NotificationController::getUnreadCount');
+
+// Search Routes
+$routes->get('/search', 'SearchController::index');
+$routes->get('/search/suggestions', 'SearchController::suggestions');
+$routes->get('/search/quick', 'SearchController::quickSearch');

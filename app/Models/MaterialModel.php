@@ -42,4 +42,34 @@ class MaterialModel extends Model
         }
         return false;
     }
+    
+    public function searchMaterials($query, $userId = null, $limit = null)
+    {
+        $builder = $this->builder()
+            ->select('materials.*, courses.title as course_title')
+            ->join('courses', 'courses.id = materials.course_id')
+            ->like('materials.file_name', $query)
+            ->orLike('courses.title', $query)
+            ->orderBy('materials.created_at', 'DESC');
+            
+        // If user is specified, only show materials from courses they're enrolled in
+        if ($userId) {
+            $db = \Config\Database::connect();
+            $enrolledCourses = $db->table('enrollments')
+                ->where('user_id', $userId)
+                ->get()
+                ->getResultArray();
+            
+            $courseIds = array_column($enrolledCourses, 'course_id');
+            if (!empty($courseIds)) {
+                $builder->whereIn('materials.course_id', $courseIds);
+            }
+        }
+        
+        if ($limit) {
+            $builder->limit($limit);
+        }
+        
+        return $builder->get()->getResultArray();
+    }
 }

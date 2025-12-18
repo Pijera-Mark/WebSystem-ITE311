@@ -10,4 +10,18 @@ class CourseModel extends Model
     protected $primaryKey = 'id';
     protected $allowedFields = ['title', 'description'];
     protected $useTimestamps = true;
+    
+    public function searchCourses($query, $limit = null)
+    {
+        $builder = $this->builder()
+            ->like('title', $query)
+            ->orLike('description', $query)
+            ->orderBy('created_at', 'DESC');
+            
+        if ($limit) {
+            $builder->limit($limit);
+        }
+        
+        return $builder->get()->getResultArray();
+    }
 }

@@ -51,6 +51,28 @@
                             </a>
                         </li>
                         
+                        <!-- Search Bar -->
+                        <li class="nav-item">
+                            <div class="input-group" style="width: 300px;">
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="navSearchInput"
+                                       placeholder="Quick search..."
+                                       autocomplete="off">
+                                <button class="btn btn-outline-secondary" type="button" id="navSearchBtn">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Quick Search Results Dropdown -->
+                            <div class="dropdown-menu dropdown-menu-end" id="navSearchResults" style="display: none; min-width: 350px;">
+                                <div class="dropdown-header">Quick Search Results</div>
+                                <div id="navSearchList">
+                                    <!-- Results will be loaded here -->
+                                </div>
+                            </div>
+                        </li>
+                        
                         <!-- Notifications Dropdown -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown">
@@ -330,6 +352,114 @@
                 clearInterval(notificationInterval);
             }
         });
+        
+        // Navigation search functionality
+        let navSearchTimeout;
+        const navSearchInput = $('#navSearchInput');
+        const navSearchResults = $('#navSearchResults');
+        const navSearchBtn = $('#navSearchBtn');
+        const navSearchList = $('#navSearchList');
+        
+        // Navigation search with debouncing
+        navSearchInput.on('input', function() {
+            const query = $(this).val().trim();
+            
+            clearTimeout(navSearchTimeout);
+            
+            if (query.length < 2) {
+                navSearchResults.hide();
+                return;
+            }
+            
+            navSearchTimeout = setTimeout(function() {
+                fetchNavSearchResults(query);
+            }, 300);
+        });
+        
+        // Search button click
+        navSearchBtn.on('click', function() {
+            const query = navSearchInput.val().trim();
+            if (query.length >= 2) {
+                window.location.href = '/search?q=' + encodeURIComponent(query);
+            }
+        });
+        
+        // Enter key in search input
+        navSearchInput.on('keypress', function(e) {
+            if (e.which === 13) {
+                const query = $(this).val().trim();
+                if (query.length >= 2) {
+                    window.location.href = '/search?q=' + encodeURIComponent(query);
+                }
+            }
+        });
+        
+        // Hide search results when clicking outside
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.input-group').length && !$(e.target).closest('#navSearchResults').length) {
+                navSearchResults.hide();
+            }
+        });
+        
+        function fetchNavSearchResults(query) {
+            $.ajax({
+                url: '/search/quick',
+                method: 'GET',
+                data: { q: query },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        displayNavSearchResults(response.results);
+                    } else {
+                        navSearchResults.hide();
+                    }
+                },
+                error: function() {
+                    navSearchResults.hide();
+                }
+            });
+        }
+        
+        function displayNavSearchResults(results) {
+            navSearchList.empty();
+            
+            if (results.length === 0) {
+                navSearchList.html(`
+                    <div class="dropdown-item text-muted">
+                        <i class="bi bi-search"></i> No results found
+                    </div>
+                `);
+            } else {
+                results.forEach(function(result) {
+                    const icon = result.type === 'course' ? 
+                        '<i class="bi bi-book text-primary"></i>' : 
+                        '<i class="bi bi-file-earmark text-success"></i>';
+                    
+                    const item = `
+                        <a href="${result.url}" class="dropdown-item">
+                            <div class="d-flex align-items-center">
+                                <div class="me-2">${icon}</div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold">${result.title}</div>
+                                    <small class="text-muted">${result.description}</small>
+                                </div>
+                            </div>
+                        </a>
+                    `;
+                    navSearchList.append(item);
+                });
+                
+                // Add "View all results" link
+                navSearchList.append(`
+                    <div class="dropdown-divider"></div>
+                    <a href="/search?q=${encodeURIComponent(navSearchInput.val().trim())}" class="dropdown-item text-center">
+                        <small>View all results</small>
+                    </a>
+                `);
+            }
+            
+            navSearchResults.show();
+        }
     });
     </script>
     <?php endif; ?>
