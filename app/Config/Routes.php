@@ -80,3 +80,9 @@ $routes->get('/admin/course/(:num)/upload', 'Materials::upload/$1');
 $routes->post('/admin/course/(:num)/upload', 'Materials::upload/$1');
 $routes->get('/materials/delete/(:num)', 'Materials::delete/$1');
 $routes->get('/materials/download/(:num)', 'Materials::download/$1');
+
+// Notification Routes
+$routes->get('/notifications/get', 'NotificationController::getNotifications');
+$routes->post('/notifications/mark-read', 'NotificationController::markAsRead');
+$routes->post('/notifications/mark-all-read', 'NotificationController::markAllAsRead');
+$routes->get('/notifications/unread-count', 'NotificationController::getUnreadCount');

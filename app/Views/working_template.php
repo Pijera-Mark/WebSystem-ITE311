@@ -50,6 +50,36 @@
                                 <i class="bi bi-speedometer2"></i> Dashboard
                             </a>
                         </li>
+                        
+                        <!-- Notifications Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-bell"></i> 
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notificationBadge" style="display: none;">
+                                    0
+                                </span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" style="min-width: 350px;" id="notificationDropdown">
+                                <li class="dropdown-header d-flex justify-content-between align-items-center">
+                                    <span>Notifications</span>
+                                    <button class="btn btn-sm btn-outline-primary" id="markAllReadBtn">Mark all as read</button>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li id="notificationList">
+                                    <div class="text-center p-3">
+                                        <div class="spinner-border spinner-border-sm" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item text-center" href="<?= base_url('notifications') ?>">
+                                        View all notifications
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
                         <?php if (session()->get('role') === 'admin'): ?>
                             <!-- Admin Navigation -->
                             <li class="nav-item dropdown">
@@ -134,5 +164,174 @@
 
     <!-- Bootstrap JS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- jQuery for Notifications -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <?php if (session() && session()->get('isLoggedIn')): ?>
+    <script>
+    $(document).ready(function() {
+        let notificationInterval;
+        
+        // Load notifications immediately
+        loadNotifications();
+        
+        // Set up interval to check for new notifications every 30 seconds
+        notificationInterval = setInterval(function() {
+            checkUnreadCount();
+        }, 30000);
+        
+        // Load notifications when dropdown is opened
+        $('#notificationDropdown').on('show.bs.dropdown', function() {
+            loadNotifications();
+        });
+        
+        // Mark all as read
+        $('#markAllReadBtn').on('click', function(e) {
+            e.stopPropagation();
+            markAllAsRead();
+        });
+        
+        function loadNotifications() {
+            $.ajax({
+                url: '/notifications/get',
+                method: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        updateNotificationBadge(response.unread_count);
+                        displayNotifications(response.notifications);
+                    }
+                },
+                error: function() {
+                    console.log('Error loading notifications');
+                }
+            });
+        }
+        
+        function checkUnreadCount() {
+            $.ajax({
+                url: '/notifications/unread-count',
+                method: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        updateNotificationBadge(response.unread_count);
+                    }
+                },
+                error: function() {
+                    console.log('Error checking unread count');
+                }
+            });
+        }
+        
+        function updateNotificationBadge(count) {
+            const badge = $('#notificationBadge');
+            if (count > 0) {
+                badge.text(count);
+                badge.show();
+            } else {
+                badge.hide();
+            }
+        }
+        
+        function displayNotifications(notifications) {
+            const notificationList = $('#notificationList');
+            notificationList.empty();
+            
+            if (notifications.length === 0) {
+                notificationList.html(`
+                    <div class="text-center p-3 text-muted">
+                        <i class="bi bi-bell-slash" style="font-size: 1.5rem;"></i>
+                        <p class="mt-2 mb-0">No notifications</p>
+                    </div>
+                `);
+            } else {
+                notifications.forEach(function(notification) {
+                    const notificationItem = `
+                        <li class="dropdown-item notification-item ${!notification.is_read ? 'unread' : ''}" data-id="${notification.id}">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1 ${!notification.is_read ? 'fw-bold' : ''}">
+                                        ${getNotificationIcon(notification.type)}
+                                        ${notification.title}
+                                    </h6>
+                                    <p class="mb-1 small">${notification.message}</p>
+                                    <small class="text-muted">${notification.time_ago}</small>
+                                </div>
+                                ${!notification.is_read ? '<span class="badge bg-primary ms-2">New</span>' : ''}
+                            </div>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                    `;
+                    notificationList.append(notificationItem);
+                });
+                
+                // Add click handler to mark as read
+                $('.notification-item').on('click', function() {
+                    const notificationId = $(this).data('id');
+                    markAsRead(notificationId);
+                });
+            }
+        }
+        
+        function getNotificationIcon(type) {
+            const icons = {
+                'enrollment': '<i class="bi bi-person-plus text-primary"></i>',
+                'material': '<i class="bi bi-file-earmark text-success"></i>',
+                'system': '<i class="bi bi-gear text-warning"></i>',
+                'info': '<i class="bi bi-info-circle text-info"></i>'
+            };
+            return icons[type] || icons['info'];
+        }
+        
+        function markAsRead(notificationId) {
+            $.ajax({
+                url: '/notifications/mark-read',
+                method: 'POST',
+                data: {
+                    notification_id: notificationId,
+                    '<?= csrf_token() ?>': '<?= csrf_hash() ?>'
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        loadNotifications();
+                    }
+                },
+                error: function() {
+                    console.log('Error marking notification as read');
+                }
+            });
+        }
+        
+        function markAllAsRead() {
+            $.ajax({
+                url: '/notifications/mark-all-read',
+                method: 'POST',
+                data: {
+                    '<?= csrf_token() ?>': '<?= csrf_hash() ?>'
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        loadNotifications();
+                    }
+                },
+                error: function() {
+                    console.log('Error marking all notifications as read');
+                }
+            });
+        }
+        
+        // Clean up interval when page is unloaded
+        $(window).on('beforeunload', function() {
+            if (notificationInterval) {
+                clearInterval(notificationInterval);
+            }
+        });
+    });
+    </script>
+    <?php endif; ?>
 </body>
 </html>

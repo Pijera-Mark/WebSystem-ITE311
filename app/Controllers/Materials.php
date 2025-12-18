@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Models\MaterialModel;
 use App\Models\CourseModel;
+use App\Models\NotificationModel;
 
 class Materials extends BaseController
 {
@@ -53,6 +54,26 @@ class Materials extends BaseController
                     ];
                     
                     if ($materialModel->insertMaterial($materialData)) {
+                        // Create notifications for enrolled students
+                        $notificationModel = new NotificationModel();
+                        $db = \Config\Database::connect();
+                        
+                        // Get all enrolled students
+                        $enrolledStudents = $db->table('enrollments')
+                            ->where('course_id', $course_id)
+                            ->get()
+                            ->getResultArray();
+                        
+                        foreach ($enrolledStudents as $student) {
+                            $notificationData = [
+                                'user_id' => $student['user_id'],
+                                'title' => 'New Material Available',
+                                'message' => 'A new material "' . $file->getClientName() . '" has been uploaded to ' . $course['title'],
+                                'type' => 'material'
+                            ];
+                            $notificationModel->createNotification($notificationData);
+                        }
+                        
                         return redirect()->to('/admin/courses')->with('success', 'Material uploaded successfully');
                     } else {
                         return redirect()->to('/admin/course/' . $course_id . '/upload')->with('error', 'Failed to save material information');
