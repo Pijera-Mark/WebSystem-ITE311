@@ -301,6 +301,44 @@
             <?php endif; ?>
         </div>
 
+        <!-- Materials Section for Students -->
+        <?php if ($userRole === 'student'): ?>
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="info-card">
+                        <h4 class="mb-4"><i class="bi bi-folder"></i> Course Materials</h4>
+                        <?php if (!empty($roleData['materials'])): ?>
+                            <div class="list-group">
+                                <?php foreach ($roleData['materials'] as $material): ?>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">
+                                                <i class="bi bi-file-earmark"></i> 
+                                                <?= esc($material['file_name']) ?>
+                                            </h6>
+                                            <small class="text-muted">
+                                                Course: <?= esc($material['course_title']) ?> | 
+                                                Uploaded: <?= date('M d, Y', strtotime($material['created_at'])) ?>
+                                            </small>
+                                        </div>
+                                        <a href="<?= base_url('/materials/download/' . $material['id']) ?>" 
+                                           class="btn btn-sm btn-primary">
+                                            <i class="bi bi-download"></i> Download
+                                        </a>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php else: ?>
+                            <div class="text-center text-muted py-3">
+                                <i class="bi bi-folder2-open" style="font-size: 2rem;"></i>
+                                <p class="mt-2">No materials available for your enrolled courses.</p>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+
         <!-- User Information Card -->
         <div class="row mb-5">
             <div class="col-12">

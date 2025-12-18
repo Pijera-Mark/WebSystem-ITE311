@@ -578,9 +578,22 @@ class AuthController extends BaseController
                         ->getResultArray();
                 }
                 
+                // Get materials for enrolled courses
+                $materials = [];
+                if (!empty($enrolledCourseIds)) {
+                    $materials = $db->table('materials')
+                        ->whereIn('course_id', $enrolledCourseIds)
+                        ->join('courses', 'courses.id = materials.course_id')
+                        ->select('materials.*, courses.title as course_title')
+                        ->orderBy('materials.created_at', 'DESC')
+                        ->get()
+                        ->getResultArray();
+                }
+                
                 return [
                     'enrolledCourses' => $enrolledCourses,
                     'availableCourses' => $availableCourses,
+                    'materials' => $materials,
                     'totalCourses' => count($enrolledCourses)
                 ];
         }
