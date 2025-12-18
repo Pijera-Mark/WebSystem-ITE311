@@ -67,3 +67,10 @@ $routes->group('/student', function($routes) {
 // Course Routes (public)
 $routes->get('courses/browse', 'CourseController::browse');
 $routes->get('courses/(:num)', 'CourseController::view/$1');
+
+// Enrollment Routes
+$routes->post('enroll/(:num)', 'Student\StudentController::enroll/$1');
+$routes->post('unenroll/(:num)', 'Student\StudentController::unenroll/$1');
+
+// AJAX Enrollment Route (Lab Requirement)
+$routes->post('/course/enroll', 'Course::enroll');

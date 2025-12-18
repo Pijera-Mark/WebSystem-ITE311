@@ -560,8 +560,27 @@ class AuthController extends BaseController
                     ->get()
                     ->getResultArray();
                 
+                // Get available courses (courses not enrolled in)
+                $enrolledCourseIds = [];
+                foreach ($enrolledCourses as $course) {
+                    $enrolledCourseIds[] = $course['course_id'];
+                }
+                
+                $availableCourses = [];
+                if (!empty($enrolledCourseIds)) {
+                    $availableCourses = $db->table('courses')
+                        ->whereNotIn('id', $enrolledCourseIds)
+                        ->get()
+                        ->getResultArray();
+                } else {
+                    $availableCourses = $db->table('courses')
+                        ->get()
+                        ->getResultArray();
+                }
+                
                 return [
                     'enrolledCourses' => $enrolledCourses,
+                    'availableCourses' => $availableCourses,
                     'totalCourses' => count($enrolledCourses)
                 ];
         }

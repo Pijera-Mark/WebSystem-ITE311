@@ -289,4 +289,74 @@ class StudentController extends BaseController
         
         return round(($completedLessons / $totalLessons) * 100, 2);
     }
+    
+    public function enroll($courseId)
+    {
+        $db = \Config\Database::connect();
+        $studentId = session()->get('userID');
+        
+        // Check if student is already enrolled
+        $existing = $db->table('enrollments')
+            ->where('user_id', $studentId)
+            ->where('course_id', $courseId)
+            ->get()
+            ->getRow();
+        
+        if ($existing) {
+            session()->setFlashdata('error', 'You are already enrolled in this course');
+            return redirect()->to('/courses/' . $courseId);
+        }
+        
+        // Check if course exists
+        $course = $db->table('courses')
+            ->where('id', $courseId)
+            ->get()
+            ->getRow();
+        
+        if (!$course) {
+            session()->setFlashdata('error', 'Course not found');
+            return redirect()->to('/courses/browse');
+        }
+        
+        // Create enrollment
+        $data = [
+            'user_id' => $studentId,
+            'course_id' => $courseId,
+            'status' => 'active',
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
+        
+        $db->table('enrollments')->insert($data);
+        
+        session()->setFlashdata('success', 'Successfully enrolled in course: ' . $course->title);
+        return redirect()->to('/student/course/' . $courseId);
+    }
+    
+    public function unenroll($courseId)
+    {
+        $db = \Config\Database::connect();
+        $studentId = session()->get('userID');
+        
+        // Check if student is enrolled
+        $enrollment = $db->table('enrollments')
+            ->where('user_id', $studentId)
+            ->where('course_id', $courseId)
+            ->get()
+            ->getRow();
+        
+        if (!$enrollment) {
+            session()->setFlashdata('error', 'You are not enrolled in this course');
+            return redirect()->to('/courses/' . $courseId);
+        }
+        
+        // Delete enrollment
+        $db->table('enrollments')
+            ->where('user_id', $studentId)
+            ->where('course_id', $courseId)
+            ->delete();
+        
+        session()->setFlashdata('success', 'Successfully unenrolled from course');
+        return redirect()->to('/courses/' . $courseId);
+    }
 }

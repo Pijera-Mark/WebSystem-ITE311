@@ -254,48 +254,47 @@
                 </div>
             <?php else: ?>
                 <!-- Student Content -->
-                <div class="col-md-8">
+                <div class="col-md-6">
                     <div class="info-card">
-                        <h4 class="mb-4"><i class="bi bi-book"></i> My Courses</h4>
-                        <?php if (!empty($roleData['enrolledCourses'])): ?>
-                            <div class="row">
-                                <?php foreach ($roleData['enrolledCourses'] as $enrollment): ?>
-                                    <div class="col-md-6 mb-3">
-                                        <div class="card">
-                                            <div class="card-body">
-                                                <h5 class="card-title"><?= $enrollment['title'] ?></h5>
-                                                <p class="card-text text-muted"><?= $enrollment['description'] ?></p>
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <span class="badge bg-success">Enrolled</span>
-                                                    <a href="#" class="btn btn-sm btn-outline-primary">View</a>
-                                                </div>
-                                            </div>
+                        <h4 class="mb-4"><i class="bi bi-book"></i> Enrolled Courses</h4>
+                        <div id="enrolled-courses">
+                            <?php if (!empty($roleData['enrolledCourses'])): ?>
+                                <div class="list-group">
+                                    <?php foreach ($roleData['enrolledCourses'] as $enrollment): ?>
+                                        <div class="list-group-item">
+                                            <h6 class="mb-1"><?= $enrollment['title'] ?></h6>
+                                            <p class="mb-1 text-muted"><?= substr($enrollment['description'], 0, 100) ?>...</p>
+                                            <small class="text-success">Enrolled on <?= date('M d, Y', strtotime($enrollment['enrollment_date'])) ?></small>
                                         </div>
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
-                        <?php else: ?>
-                            <p class="text-muted">You haven't enrolled in any courses yet.</p>
-                            <a href="#" class="btn btn-primary"><i class="bi bi-search"></i> Browse Courses</a>
-                        <?php endif; ?>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php else: ?>
+                                <p class="text-muted">You haven't enrolled in any courses yet.</p>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <div class="info-card">
-                        <h4 class="mb-4"><i class="bi bi-star"></i> Recommended</h4>
-                        <div class="list-group">
-                            <a href="#" class="list-group-item list-group-item-action">
-                                <h6 class="mb-1">Web Development Basics</h6>
-                                <small class="text-muted">Learn HTML, CSS, JavaScript</small>
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action">
-                                <h6 class="mb-1">Database Design</h6>
-                                <small class="text-muted">Master SQL and database concepts</small>
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action">
-                                <h6 class="mb-1">Mobile App Development</h6>
-                                <small class="text-muted">Build cross-platform apps</small>
-                            </a>
+                        <h4 class="mb-4"><i class="bi bi-plus-circle"></i> Available Courses</h4>
+                        <div id="available-courses">
+                            <?php if (!empty($roleData['availableCourses'])): ?>
+                                <div class="list-group">
+                                    <?php foreach ($roleData['availableCourses'] as $course): ?>
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-1"><?= $course['title'] ?></h6>
+                                                <p class="mb-1 text-muted"><?= substr($course['description'], 0, 80) ?>...</p>
+                                            </div>
+                                            <button class="btn btn-primary btn-sm enroll-btn" data-course-id="<?= $course['id'] ?>">
+                                                Enroll
+                                            </button>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php else: ?>
+                                <p class="text-muted">No available courses at the moment.</p>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -339,5 +338,98 @@
             </div>
         </div>
     </div>
+
+    <!-- jQuery and AJAX Enrollment Script -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+    $(document).ready(function() {
+        // Handle enrollment button clicks
+        $('.enroll-btn').on('click', function(e) {
+            e.preventDefault();
+            
+            var $btn = $(this);
+            var courseId = $btn.data('course-id');
+            var $courseItem = $btn.closest('.list-group-item');
+            
+            // Disable button to prevent multiple clicks
+            $btn.prop('disabled', true).text('Enrolling...');
+            
+            // Send AJAX request to enroll
+            $.post('/course/enroll', {
+                course_id: courseId,
+                <?= csrf_token() ?>: '<?= csrf_hash() ?>'
+            }, function(response) {
+                if (response.success) {
+                    // Show success message
+                    showAlert('success', response.message);
+                    
+                    // Move course to enrolled courses section
+                    var $enrolledCourses = $('#enrolled-courses .list-group');
+                    if ($enrolledCourses.length === 0) {
+                        $('#enrolled-courses').html('<div class="list-group"></div>');
+                        $enrolledCourses = $('#enrolled-courses .list-group');
+                    }
+                    
+                    var courseTitle = $courseItem.find('h6').text();
+                    var courseDesc = $courseItem.find('p').text();
+                    var currentDate = new Date().toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric' 
+                    });
+                    
+                    $enrolledCourses.append(
+                        '<div class="list-group-item">' +
+                        '<h6 class="mb-1">' + courseTitle + '</h6>' +
+                        '<p class="mb-1 text-muted">' + courseDesc + '</p>' +
+                        '<small class="text-success">Enrolled on ' + currentDate + '</small>' +
+                        '</div>'
+                    );
+                    
+                    // Remove from available courses
+                    $courseItem.fadeOut(300, function() {
+                        $(this).remove();
+                        
+                        // Check if no more available courses
+                        if ($('#available-courses .list-group-item').length === 0) {
+                            $('#available-courses').html('<p class="text-muted">No available courses at the moment.</p>');
+                        }
+                    });
+                } else {
+                    // Show error message
+                    showAlert('danger', response.message);
+                    // Re-enable button
+                    $btn.prop('disabled', false).text('Enroll');
+                }
+            }).fail(function(xhr) {
+                // Handle AJAX errors
+                var errorMessage = 'An error occurred while enrolling.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                }
+                showAlert('danger', errorMessage);
+                // Re-enable button
+                $btn.prop('disabled', false).text('Enroll');
+            });
+        });
+        
+        // Function to show Bootstrap alerts
+        function showAlert(type, message) {
+            var alertHtml = '<div class="alert alert-' + type + ' alert-dismissible fade show mt-3" role="alert">' +
+                           '<i class="bi bi-' + (type === 'success' ? 'check-circle' : 'exclamation-triangle') + '-fill me-2"></i>' +
+                           message +
+                           '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>' +
+                           '</div>';
+            
+            // Insert alert after the welcome message
+            $('.dashboard-header').after(alertHtml);
+            
+            // Auto-dismiss after 5 seconds
+            setTimeout(function() {
+                $('.alert').alert('close');
+            }, 5000);
+        }
+    });
+    </script>
 
 <?= $this->endSection() ?>
